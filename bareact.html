@@ -1,0 +1,193 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <title>click judgment</title>
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="css/ionic.css">
+    <link rel="stylesheet" href="spinner/waitMe.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="spinner/waitMe.min.js"></script>
+    <script src="phonegap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var pLimits = 10;
+
+        $(function () {
+            $("#btnBareActSearch").click(function () {
+                bareActSearchCount();
+                bareActSearch($("#pTitle").val(), 1);
+                $("#hfPageNo").val(1);
+                $(".pageNumber").text($("#hfPageNo").val());
+            });
+        });
+
+        function bareActSearch(pTitle, pOffsets) {
+            $(".ionic-body").waitMe({
+                effect: 'ios',
+                text: 'Please wait',
+                bg: 'rgba(255,255,255,0.7)',
+                color: '#000'
+            });
+
+            $.ajax({
+                url: 'http://code.jobdarbar.com/api/BareAct',
+                type: 'GET',
+                data: { pTitle: pTitle, pLimits: pLimits, pOffsets: pOffsets, pAction: 0, pLegID: 0 },
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0].HasError == "True") {
+                        navigator.notification.alert(
+                           data[0].Error,
+                           function () { },
+                           'Clickjudgements',
+                           'Ok'
+                       );
+                    }
+                    else {
+                        $("#ulBareActs").html('');
+                        $("#dvBareActs").css("display", "block");
+                        $.each(data, function (i, d) {
+                            $("#ulBareActs").append(d.HtmlRow);
+                        });
+                    }
+
+                    $('.ionic-body').waitMe('hide');
+                },
+                error: function (jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        navigator.notification.alert(
+                            'Unable to process your request, please check your internet connecttion or ty again later!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    } else {
+                        navigator.notification.alert(
+                            'Sorry, There was a problem with your last request. Please contact supprt!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    }
+                }
+            });
+        }
+
+        function bareActSearchCount() {
+            $.ajax({
+                async:false,
+                url: 'http://code.jobdarbar.com/api/BareAct',
+                type: 'GET',
+                data: { pTitle: $("#pTitle").val(), pLimits: 0, pOffsets: 0, pAction: 3, pLegID: 0 },
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0].HasError == "True") {
+                        navigator.notification.alert(
+                           data[0].Error,
+                           function () { },
+                           'Clickjudgements',
+                           'Ok'
+                       );
+                        $("#hfRecordcount").val(0);
+                    }
+                    else {
+                        $("#hfRecordcount").val(data[0].RecordCount);
+                    }
+                },
+                error: function (jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        navigator.notification.alert(
+                            'Unable to process your request, please check your internet connecttion or ty again later!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    } else {
+                        navigator.notification.alert(
+                            'Sorry, There was a problem with your last request. Please contact supprt!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    }
+                }
+            });
+        }
+
+        function goPrevious() {
+            if (parseInt($("#hfPageNo").val()) > 1) {
+                $("#hfPageNo").val(parseInt($("#hfPageNo").val()) - 1);
+                bareActSearch($("#pTitle").val(), parseInt($("#hfPageNo").val()));
+                $(".pageNumber").text($("#hfPageNo").val());
+            }
+        }
+
+        function goNext() {
+            if (parseInt($("#hfRecordcount").val()) >= parseInt($("#hfPageNo").val())) {
+                $("#hfPageNo").val(parseInt($("#hfPageNo").val()) + 1);
+                bareActSearch($("#pTitle").val(), parseInt($("#hfPageNo").val()));
+                $(".pageNumber").text($("#hfPageNo").val());
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="ionic-body">
+        <div class="bar bar-header bar-positive">
+            <a class="button icon ion-chevron-left" onclick="window.history.go(-1); return false;"></a>
+            <h1 class="title">
+                <i class="icon ion-android-search"></i>&nbsp;&nbsp;Search bare acts</h1>
+        </div>
+        <div class="content has-header has-footer padding" style="overflow: scroll; height: 100%;">
+            <div id="dvContent">
+                
+                <div class="list">
+                    <label class="item item-input">
+                        &nbsp;&nbsp;
+                    <input type="text" id="pTitle" placeholder="Search Title">
+                        <a class="button button-stable button-small  icon ion-android-search" id="btnBareActSearch">&nbsp;Search </a>&nbsp;
+                    </label>
+                </div>
+                <label id="lblErrorMessage"></label>
+            
+            <br />
+            <input type="hidden" id="hfPageNo" />
+            <input type="hidden" id="hfRecordcount" />
+
+            <div id="dvBareActs" style="display: none;">
+                <div class="button-bar" style="margin-bottom: 10px;">
+                    <a class="button button-outline button-positive icon-left ion-chevron-left" onclick="goPrevious();">Previous</a>
+                    <a class="button button-outline button-positive">Page No:
+                    <label class="pageNumber">1</label></a>
+                    <a class="button button-outline button-positive icon-right ion-chevron-right" onclick="goNext();">Next</a>
+                </div>
+                <ul class="list" id="ulBareActs">
+                </ul>
+                <div class="button-bar" style="margin-bottom: 10px;">
+                    <a class="button button-outline button-positive icon-left ion-chevron-left" onclick="goPrevious();">Previous</a>
+                    <a class="button button-outline button-positive">Page No:
+                    <label class="pageNumber">1</label></a>
+                    <a class="button button-outline button-positive icon-right ion-chevron-right" onclick="goNext();">Next</a>
+                </div>
+            </div>
+                </div>
+            <br />
+            <br />
+            <br />
+            <br />
+        </div>
+        <div class=""></div>
+        <div class="tabs tabs-positive tabs-icon-top">
+            <a class="tab-item" href="searchresult.html?vSearchType=1"><i class="icon ion-ios7-information-outline" style="font-size: 25px;"></i>Cases</a>
+            <a class="tab-item" href="topic.html"><i class="icon ion-ios7-bookmarks-outline" style="font-size: 25px;"></i>Topic</a>
+            <a class="tab-item" href="search.html"><i class="icon ion-ios7-search" style="font-size: 25px;"></i>Advance </a>
+            <a class="tab-item" href="bareact.html"><i class="icon ion-ios7-albums-outline" style="font-size: 25px;"></i>Bare Act </a>
+            <a class="tab-item" href="citation.html"><i class="icon ion-ios7-calendar-outline" style="font-size: 25px;"></i>Citation</a>
+        </div>
+    </div>
+</body>
+</html>

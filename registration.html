@@ -1,0 +1,125 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <title>click judgment</title>
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="css/ionic.css">
+    <link rel="stylesheet" href="spinner/waitMe.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="spinner/waitMe.min.js"></script>
+    <script src="phonegap.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+     
+        $(function () {
+
+            $("#btnRegister").click(function () {
+
+                $(".ionic-body").waitMe({
+                    effect: 'ios',
+                    text: 'Please wait',
+                    bg: 'rgba(255,255,255,0.7)',
+                    color: '#000'
+                });
+
+                var userObject = {
+                    pUserId: '', pFullName: ($("#pLastName").val() + ', ' + $("#pFirstName").val()), pEmailAddress: $("#pEmaiAddress").val(),
+                    pMobileNo: $("#pMobileNumber").val(), pDeviceId: device.uuid, pRegistrationDate: ''
+                };
+
+                $.ajax({
+                    url: 'http://code.jobdarbar.com/api/register',
+                    type: 'GET',
+                    data: userObject,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data[0].HasError == "true") {
+                            navigator.notification.alert(
+                                       data[0].Error,
+                                       function () { },
+                                       'Clickjudgements',
+                                       'Ok'
+                                   );
+                            $('.ionic-body').waitMe('hide');
+                        }
+                        else {
+                            if (data[0].Result > 0) {
+                                location = "home.html";
+                            }
+                            else {
+                                navigator.notification.alert(
+                                       'Sorry, There was a problem with your last request. Please contact supprt!',
+                                       function () { },
+                                       'Clickjudgements',
+                                       'Ok'
+                                   );
+                                $('.ionic-body').waitMe('hide');
+                            }
+                        }
+                    },
+                    error: function (jqXHR, exception) {
+                        if (jqXHR.status === 0) {
+                            navigator.notification.alert(
+                                'Unable to register, please check your internet connecttion or ty again later!',
+                                function () { },
+                                'Clickjudgements',
+                                'Ok'
+                            );
+                            $('.ionic-body').waitMe('hide');
+                        } else {
+                            navigator.notification.alert(
+                                'Sorry, There was a problem with your last request. Please contact supprt!',
+                                function () { },
+                                'Clickjudgements',
+                                'Ok'
+                            );
+                            $('.ionic-body').waitMe('hide');
+                        }
+                    }
+                });
+            });
+        });
+
+       
+    </script>
+</head>
+<body>
+    <div class="ionic-body">
+        <div class="bar bar-header bar-positive">
+            <h1 class="title">
+                <i class="icon ion-android-social-user"></i>&nbsp;&nbsp;Registration</h1>
+        </div>
+        <div class="content has-header has-footer padding" style="overflow: scroll; height: 100%;" id="container">
+            <label style="color: #a51717" id="lblMessage"></label>
+            <div class="list">
+                <label class="item item-input">
+                    <input type="text" id="pFirstName" placeholder="Please Enter First Name">
+                </label>
+                <label class="item item-input">
+                    <input type="text" id="pLastName" placeholder="Please Enter Last Name">
+                </label>
+                <label class="item item-input">
+                    <input type="number" id="pMobileNumber" placeholder="Please Enter Mobile Number">
+                </label>
+                <label class="item item-input">
+                    <input type="email" id="pEmaiAddress" placeholder="Please Enter Email Address">
+                </label>
+                <label class="item item-button">
+                    <a href="#" id="btnRegister" class="button button-stable button-full">Register</a>
+                </label>
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+        </div>
+        <div class="bar bar-footer bar-positive">
+            <a class="button button-positive ion-ios7-information" href="about.html">&nbsp;About Us
+            </a>
+            <a class="button button-positive ion-android-call" href="contact.html">&nbsp;Contact Us
+            </a>
+        </div>
+    </div>
+</body>
+</html>

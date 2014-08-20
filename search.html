@@ -1,0 +1,167 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <title>click judgment</title>
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="css/ionic.css">
+    <link rel="stylesheet" href="spinner/waitMe.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="spinner/waitMe.min.js"></script>
+    <script src="phonegap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var vSearchType = 3;
+
+        $(function () {
+            $("#btnFreeTextSearch").click(function () {
+                var vAction = 1;
+                var vKeyword = $("#pKeyword").val();
+
+                var vAppellant = '';
+                var vRespondent = '';
+                var vCourtid = 0;
+                var vJudge = '';
+                var vAppealType = '';
+                var vResult = '';
+                var vAdvocate = '';
+                var vCaseRefBy = '';
+                var vCaseType = '';
+
+                location = 'searchresult.html?vSearchType=' + vSearchType + '&vAppellant=' + vAppellant + '&vRespondent=' + vRespondent
+                                + '&vCourtid=' + vCourtid + '&vJudge=' + vJudge + '&vAppealType=' + vAppealType + '&vResult=' + vResult + '&vAdvocate=' + vAdvocate
+                                + '&vCaseRefBy=' + vCaseRefBy + '&vCaseType=' + vCaseType + '&vAction=' + vAction + '&vKeyword=' + vKeyword;
+            });
+
+            $("#btnAdvanceSearch").click(function () {
+                var vAction = 0;
+                var vKeyword = '';
+                var vAppellant = $("#pAppellant").val();
+                var vRespondent = $("#pRespondent").val();
+                var vCourtid = $("#pCourtid").val();
+                var vJudge = $("#pJudge").val();
+                var vAppealType = $("#pAppealType").val();
+                var vResult = $("#pResult").val();
+                var vAdvocate = $("#pAdvocate").val();
+                var vCaseRefBy = $("#pCaseRefBy").val();
+                var vCaseType = $("#pCaseType").val();
+                
+                location = 'searchresult.html?vSearchType=' + vSearchType + '&vAppellant=' + vAppellant + '&vRespondent=' + vRespondent
+                + '&vCourtid=' + vCourtid + '&vJudge=' + vJudge + '&vAppealType=' + vAppealType + '&vResult=' + vResult + '&vAdvocate=' + vAdvocate
+                + '&vCaseRefBy=' + vCaseRefBy + '&vCaseType=' + vCaseType + '&vAction=' + vAction + '&vKeyword=' + vKeyword;
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="ionic-body">
+        <div class="bar bar-header bar-positive">
+            <a class="button icon ion-chevron-left" onclick="window.history.go(-1); return false;"></a>
+            <h1 class="title">
+                <i class="icon ion-android-search"></i>&nbsp;&nbsp;Advance search</h1>
+        </div>
+        <div class="content has-header has-footer padding" style="overflow: scroll; height: 100%;" id="dvContent">
+            
+            <div class="list">
+                 <label class="item">
+                   <b> Free Text Search</b>
+                    </label>
+                <label class="item item-input">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pKeyword" placeholder="Search keyword">
+                    <a class="button button-stable button-small  icon ion-android-search" id="btnFreeTextSearch">&nbsp;Search </a>&nbsp;
+                </label>
+            </div>
+            
+            <div class="list">
+                <label class="item">
+                   <b> Advance Search</b>
+                    </label>
+                <label class="item item-input icon ion-pinpoint">
+                    &nbsp;&nbsp;
+                    <select class="full-image" id="pCourtid">
+                        <option value="-1">Select court</option>
+                        <option value="13">Allahabad</option>
+                        <option value="24">Andhra Pradesh</option>
+                        <option value="11">Bombay</option>
+                        <option value="10">Calcutta</option>
+                        <option value="31">Chhattisgarh</option>
+                        <option value="27">Delhi</option>
+                        <option value="8">Federal</option>
+                        <option value="19">Gauhati</option>
+                        <option value="26">Gujarat</option>
+                        <option value="21">Himachal Pradesh</option>
+                        <option value="17">Jammu and Kashmir</option>
+                        <option value="30">Jharkhand</option>
+                        <option value="14">Karnataka</option>
+                        <option value="25">Kerala</option>
+                        <option value="4">Lahore</option>
+                        <option value="16">Madhya Pradesh</option>
+                        <option value="12">Madras</option>
+                        <option value="6">Nagpur</option>
+                        <option value="20">Orissa</option>
+                        <option value="7">Oudh</option>
+                        <option value="15">Patna</option>
+                        <option value="2">Peshawar</option>
+                        <option value="1">Privy Council</option>
+                        <option value="18">Punjab and Haryana</option>
+                        <option value="22">Rajasthan</option>
+                        <option value="5">Rangoon</option>
+                        <option value="28">Sikkim</option>
+                        <option value="3">Sindh</option>
+                        <option value="23">Supreme</option>
+                        <option value="9">Tribunals</option>
+                        <option value="29">Uttaranchal</option>
+
+                    </select>&nbsp;&nbsp;
+                </label>
+                <label class="item item-input icon ion-android-social-user">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pAppellant" placeholder="Please enter appelant">
+                </label>
+                <label class="item item-input icon ion-android-social-user">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pRespondent" placeholder="Please enter respondent">
+                </label>
+                <label class="item item-input icon ion-person-add">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pJudge" placeholder="Please enter name of judge">
+                </label>
+                <label class="item item-input icon ion-star">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pAppealType" placeholder="Please enter appeal type">
+                </label>
+                <label class="item item-input icon ion-ios7-briefcase-outline">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pResult" placeholder="Please enter result">
+                </label>
+                <label class="item item-input icon ion-person">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pAdvocate" placeholder="Please enter advocate name">
+                </label>
+                <label class="item item-input icon ion-ios7-people">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pCaseRefBy" placeholder="Case refred by">
+                </label>
+                <label class="item item-input icon ion-ios7-box-outline">
+                    &nbsp;&nbsp;
+                    <input type="text" id="pCaseType" placeholder="Case refred by">
+                </label>
+
+                <a href="#" class="button button-full button-stable icon icon-left ion-android-search" id="btnAdvanceSearch">Search Case &nbsp;&nbsp;</a>
+
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+        </div>
+      <div class="tabs tabs-positive tabs-icon-top">
+            <a class="tab-item" href="searchresult.html?vSearchType=1"><i class="icon ion-ios7-information-outline" style="font-size: 25px;"></i>Cases</a>
+            <a class="tab-item" href="topic.html"><i class="icon ion-ios7-bookmarks-outline" style="font-size: 25px;"></i>Topic</a>
+            <a class="tab-item" href="search.html"><i class="icon ion-ios7-search" style="font-size: 25px;"></i>Advance </a>
+            <a class="tab-item" href="bareact.html"><i class="icon ion-ios7-albums-outline" style="font-size: 25px;"></i>Bare Act </a>
+            <a class="tab-item" href="citation.html"><i class="icon ion-ios7-calendar-outline" style="font-size: 25px;"></i>Citation</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <title>click judgment</title>
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="css/ionic.css">
+    <link rel="stylesheet" href="spinner/waitMe.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="spinner/waitMe.min.js"></script>
+    <script src="phonegap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var vSearchType = 4;
+
+        $(function () {
+
+            $(".ionic-body").waitMe({
+                effect: 'ios',
+                text: 'Please wait',
+                bg: 'rgba(255,255,255,0.7)',
+                color: '#000'
+            });
+
+            $.ajax({
+                url: 'http://code.jobdarbar.com/api/Publishers',
+                type: 'GET',
+                data: {},
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0].HasError == "True") {
+                        navigator.notification.alert(
+                           data[0].Error,
+                           function () { },
+                           'Clickjudgements',
+                           'Ok'
+                       );
+                    }
+                    else {
+                        $("#pPublisher").html('');
+                        $.each(data, function (i, d) {
+                            $("#pPublisher").append('<option value="' + d.DataValueFeild + '">' + d.DataTextFeild + '</option>');
+                        });
+                    }
+
+                    $('.ionic-body').waitMe('hide');
+                },
+                error: function (jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        navigator.notification.alert(
+                            'Unable to process your request, please check your internet connecttion or ty again later!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    } else {
+                        navigator.notification.alert(
+                            'Sorry, There was a problem with your last request. Please contact supprt!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    }
+                }
+            });
+
+            $("#btnCitationSearch").click(function () {
+
+                if ($("#pPublisher").val() != '') {
+                    $("#pPublisher").css("border", "solid 1px silver");
+                    if ($("#pYear").val() != '') {
+                        $("#pYear").css("border", "solid 1px silver");
+                        var vPublisher = $("#pPublisher").val();
+                        var vYear = $("#pYear").val();
+                        var vVolume = $("#pVolume").val();
+                        var vpPage = $("#pPage").val();
+
+                        location = 'searchresult.html?vSearchType=' + vSearchType + '&vPublisher=' + vPublisher + '&vYear=' + vYear + '&vVolume=' + vVolume + '&pPage=' + vpPage;
+                    }
+                    else {
+                        $("#pYear").css("border", "solid 1px red");
+                    }
+                } else {
+                    $("#pPublisher").css("border", "solid 1px red");
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="ionic-body">
+        <div class="bar bar-header bar-positive">
+            <a class="button icon ion-chevron-left" onclick="window.history.go(-1); return false;"></a>
+            <h1 class="title">
+                <i class="icon ion-android-search"></i>&nbsp;&nbsp;Search citations</h1>
+        </div>
+        <div class="content has-header has-footer padding" style="overflow: scroll; height: 100%;">
+            <div id="dvContent" class="">
+                <label id="lblErrorMessage"></label>
+                <div class="list">
+                    <label class="item item-input icon ion-android-social">
+                        &nbsp;&nbsp;
+                    <select id="pPublisher" class="full-image" style="margin-right:10px;"></select>
+                    </label>
+                    <label class="item item-input icon ion-android-calendar">
+                        &nbsp;&nbsp;
+                    <input type="text" id="pYear" placeholder="Please enter year" required>
+                    </label>
+                    <label class="item item-input icon ion-android-book">
+                        &nbsp;&nbsp;
+                    <input type="text" id="pVolume" placeholder="Please enter volume">
+                    </label>
+                    <label class="item item-input icon ion-bookmark">
+                        &nbsp;&nbsp;
+                    <input type="text" id="pPage" placeholder="Please enter page">
+                    </label>
+                    <a href="#" class="button button-full button-stable icon icon-left ion-android-search" id="btnCitationSearch">Search citation &nbsp;&nbsp;</a>
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+        </div>
+         <div class="tabs tabs-positive tabs-icon-top">
+            <a class="tab-item" href="searchresult.html?vSearchType=1"><i class="icon ion-ios7-information-outline" style="font-size: 25px;"></i>Cases</a>
+            <a class="tab-item" href="topic.html"><i class="icon ion-ios7-bookmarks-outline" style="font-size: 25px;"></i>Topic</a>
+            <a class="tab-item" href="search.html"><i class="icon ion-ios7-search" style="font-size: 25px;"></i>Advance </a>
+            <a class="tab-item" href="bareact.html"><i class="icon ion-ios7-albums-outline" style="font-size: 25px;"></i>Bare Act </a>
+            <a class="tab-item" href="citation.html"><i class="icon ion-ios7-calendar-outline" style="font-size: 25px;"></i>Citation</a>
+        </div>
+    </div>
+</body>
+</html>

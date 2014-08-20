@@ -1,0 +1,439 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <title>click judgment</title>
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="css/ionic.css">
+
+    <link rel="stylesheet" href="spinner/waitMe.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="spinner/waitMe.min.js"></script>
+    <script type="text/javascript" src="js/jquery.query.string.js"></script>
+    <script src="phonegap.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        var vSearchType = 0;
+
+        var vtitle = '';
+        var vsection = '';
+
+        var vPublisher = '';
+        var vYear = '';
+        var vVolume = '';
+        var vpPage = '';
+
+        var vStartDate = ''; var vEndDate = '';
+
+        var vFormatedData = '';
+
+        $(function () {
+            vSearchType = getParameterByName("vSearchType");
+            $(".pager").hide();
+            $("#hfPageNo").val(1);
+            $(".pageNumber").text($("#hfPageNo").val());
+
+            switch (parseInt(vSearchType)) {
+                case 1: {
+                    LatestCasesSearch();
+                    break;
+                }
+                case 2: {
+                    vtitle = getParameterByName("vtitle");
+                    vsection = getParameterByName("vsection");
+
+                    TopicSearch(vtitle, vsection, $("#hfPageNo").val());
+                    break;
+                }
+                case 3: {
+                    ConditionalSearch($("#hfPageNo").val(), 10, getParameterByName("vAppellant"), getParameterByName("vRespondent"), getParameterByName("vCourtid")
+                        , getParameterByName("vJudge"), getParameterByName("vAppealType"), getParameterByName("vResult"), getParameterByName("vAdvocate"),
+                        getParameterByName("vCaseRefBy"), getParameterByName("vCaseType"), getParameterByName("vAction"), getParameterByName("vKeyword"));
+                    break;
+                }
+                case 4: {
+                    vPublisher = getParameterByName("vPublisher");
+                    vYear = getParameterByName("vYear");
+                    vVolume = getParameterByName("vVolume");
+                    vpPage = getParameterByName("vpPage");
+
+                    CitationSearch(vPublisher, vYear, vVolume, vpPage);
+                    break;
+                }
+                case 5: {
+                    vStartDate = getParameterByName("vStartDate");
+                    vEndDate = getParameterByName("vEndDate");
+
+                    DatewiseSearch(vStartDate, vEndDate, $("#hfPageNo").val());
+                    break;
+                }
+                default:
+                    break;
+            }
+        });
+
+        function ConditionalSearch(pOffsets, pLimits, pAppellant, pRespondent, pCourtid, pJudge, pAppealType, pResult, pAdvocate, pCaseRefBy, pCaseType, pAction, pKeyword) {
+
+            $(".ionic-body").waitMe({
+                effect: 'ios',
+                text: 'Please wait',
+                bg: 'rgba(255,255,255,0.7)',
+                color: '#000'
+            });
+
+            var conditionalObject = {
+                pOffsets: pOffsets, pLimits: pLimits, pAppellant: pAppellant, pRespondent: pRespondent, pCourtid: pCourtid, pJudge: pJudge,
+                pAppealType: pAppealType, pResult: pResult, pAdvocate: pAdvocate, pCaseRefBy: pCaseRefBy, pCaseType: pCaseType, pAction: pAction, pKeyword: pKeyword
+            };
+
+            $.get("http://code.jobdarbar.com/api/Advance", conditionalObject, function (data, status) {
+                if (data[0].HasError == "True") {
+                    $(".pager").hide();
+                    navigator.notification.alert(
+                            data[0].Error,
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                }
+                else {
+                    $(".pager").show();
+                    $("#dvContent").html('');
+                    $.each(data, function (i, d) {
+                        $("#dvContent").append(d.HtmlRow);
+                    });
+                }
+
+                $('.ionic-body').waitMe('hide');
+            });
+        }
+
+        function TopicSearch(ptitle, psection, pOffsets) {
+            $(".ionic-body").waitMe({
+                effect: 'ios',
+                text: 'Please wait',
+                bg: 'rgba(255,255,255,0.7)',
+                color: '#000'
+            });
+
+            $.ajax({
+                url: 'http://code.jobdarbar.com/api/Topic',
+                type: 'GET',
+                data: { ptitle: ptitle, pSection: psection, pLimits: 10, pOffsets: pOffsets },
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0].HasError == "True") {
+                        $(".pager").hide();
+                        navigator.notification.alert(
+                            data[0].Error,
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                    }
+                    else {
+                        $(".pager").show();
+                        $("#dvContent").html('');
+                        $.each(data, function (i, d) {
+                            $("#dvContent").append(d.HtmlRow);
+                        });
+                    }
+
+                    $('.ionic-body').waitMe('hide');
+                },
+                error: function (jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        navigator.notification.alert(
+                            'Unable to process your request, please check your internet connecttion or ty again later!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    } else {
+                        navigator.notification.alert(
+                            'Sorry, There was a problem with your last request. Please contact supprt!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    }
+                }
+            });
+        }
+
+        function DatewiseSearch(pStartDate, pEndDate, pOffsets) {
+            $(".ionic-body").waitMe({
+                effect: 'ios',
+                text: 'Please wait',
+                bg: 'rgba(255,255,255,0.7)',
+                color: '#000'
+            });
+
+            $.ajax({
+                url: 'http://code.jobdarbar.com/api/DateWise',
+                type: 'GET',
+                data: { pStartDate: pStartDate, pEndDate: pEndDate, pLimits: 10, pOffsets: pOffsets },
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0].HasError == "True") {
+                        $(".pager").hide();
+                        
+                        navigator.notification.alert(
+                            data[0].Error,
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                    }
+                    else {
+                        $(".pager").show();
+                        $("#dvContent").html('');
+                        $.each(data, function (i, d) {
+                            $("#dvContent").append(d.HtmlRow);
+                        });
+                    }
+
+                    $('.ionic-body').waitMe('hide');
+                },
+                error: function (jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        navigator.notification.alert(
+                            'Unable to process your request, please check your internet connecttion or ty again later!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    } else {
+                        navigator.notification.alert(
+                            'Sorry, There was a problem with your last request. Please contact supprt!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    }
+                }
+            });
+        }
+
+        function CitationSearch(pPublisher, pYear, pVolume, pPage) {
+
+            $(".pager").hide();
+
+            $(".ionic-body").waitMe({
+                effect: 'ios',
+                text: 'Please wait',
+                bg: 'rgba(255,255,255,0.7)',
+                color: '#000'
+            });
+
+            $.ajax({
+                url: 'http://code.jobdarbar.com/api/Publisher',
+                type: 'GET',
+                data: { pPublisher: pPublisher, pYear: pYear, pVolume: pVolume, pPage: pPage },
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0].HasError == "True") {
+                        
+                        navigator.notification.alert(
+                            data[0].Error,
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                    }
+                    else {
+                        $("#dvContent").html('');
+                        $.each(data, function (i, d) {
+                            $("#dvContent").append(d.HtmlRow);
+                        });
+                    }
+
+                    $('.ionic-body').waitMe('hide');
+                },
+                error: function (jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        navigator.notification.alert(
+                            'Unable to process your request, please check your internet connecttion or ty again later!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    } else {
+                        navigator.notification.alert(
+                            'Sorry, There was a problem with your last request. Please contact supprt!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    }
+                }
+            });
+        }
+
+        function LatestCasesSearch() {
+
+            $(".pager").hide();
+
+            $(".ionic-body").waitMe({
+                effect: 'ios',
+                text: 'Please wait',
+                bg: 'rgba(255,255,255,0.7)',
+                color: '#000'
+            });
+
+            $.ajax({
+                url: 'http://code.jobdarbar.com/api/Latest',
+                type: 'GET',
+                data: {},
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0].HasError == "True") {
+                        
+                        navigator.notification.alert(
+                            data[0].Error,
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                    }
+                    else {
+                        $("#dvContent").html('');
+                        $.each(data, function (i, d) {
+                            $("#dvContent").append(d.HtmlRow);
+                        });
+                    }
+
+                    $('.ionic-body').waitMe('hide');
+                },
+                error: function (jqXHR, exception) {
+                    if (jqXHR.status === 0) {
+                        navigator.notification.alert(
+                            'Unable to process your request, please check your internet connecttion or ty again later!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    } else {
+                        navigator.notification.alert(
+                            'Sorry, There was a problem with your last request. Please contact supprt!',
+                            function () { },
+                            'Clickjudgements',
+                            'Ok'
+                        );
+                        $('.ionic-body').waitMe('hide');
+                    }
+                }
+            });
+        }
+
+        function goPrevious() {
+            if (parseInt($("#hfPageNo").val()) > 1) {
+                switch (parseInt(vSearchType)) {
+                    case 2: {
+                        $("#hfPageNo").val(parseInt($("#hfPageNo").val()) - 1);
+                        TopicSearch(vtitle, vsection, $("#hfPageNo").val());
+                        $(".pageNumber").text($("#hfPageNo").val());
+                        break;
+                    }
+                    case 3:
+                        {
+                            $("#hfPageNo").val(parseInt($("#hfPageNo").val()) - 1);
+                            $(".pageNumber").text($("#hfPageNo").val());
+                            ConditionalSearch($("#hfPageNo").val(), 10, getParameterByName("vAppellant"), getParameterByName("vRespondent"), getParameterByName("vCourtid")
+                       , getParameterByName("vJudge"), getParameterByName("vAppealType"), getParameterByName("vResult"), getParameterByName("vAdvocate"),
+                       getParameterByName("vCaseRefBy"), getParameterByName("vCaseType"), getParameterByName("vAction"), getParameterByName("vKeyword"));
+                            break;
+                        }
+                    case 5: {
+                        $("#hfPageNo").val(parseInt($("#hfPageNo").val()) + 1);
+                        vStartDate = getParameterByName("vPublisher");
+                        vEndDate = getParameterByName("vYear");
+                        DatewiseSearch(vStartDate, vEndDate, $("#hfPageNo").val());
+                        break;
+                    }
+                    default:
+                        break;
+                }
+            }
+        }
+
+        function goNext() {
+            switch (parseInt(vSearchType)) {
+                case 2: {
+                    $("#hfPageNo").val(parseInt($("#hfPageNo").val()) + 1);
+                    TopicSearch(vtitle, vsection, $("#hfPageNo").val());
+                    $(".pageNumber").text($("#hfPageNo").val());
+                    break;
+                }
+                case 3: {
+
+                    $("#hfPageNo").val(parseInt($("#hfPageNo").val()) + 1);
+                    $(".pageNumber").text($("#hfPageNo").val());
+                    ConditionalSearch($("#hfPageNo").val(), 10, getParameterByName("vAppellant"), getParameterByName("vRespondent"), getParameterByName("vCourtid")
+                       , getParameterByName("vJudge"), getParameterByName("vAppealType"), getParameterByName("vResult"), getParameterByName("vAdvocate"),
+                       getParameterByName("vCaseRefBy"), getParameterByName("vCaseType"), getParameterByName("vAction"), getParameterByName("vKeyword"));
+                    break;
+                }
+                case 5: {
+                    $("#hfPageNo").val(parseInt($("#hfPageNo").val()) + 1);
+                    vStartDate = getParameterByName("vPublisher");
+                    vEndDate = getParameterByName("vYear");
+                    DatewiseSearch(vStartDate, vEndDate, $("#hfPageNo").val());
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+    </script>
+
+</head>
+<body>
+    <div class="ionic-body">
+        <div class="bar bar-header bar-positive">
+            <a class="button icon ion-chevron-left" onclick="window.history.go(-1); return false;"></a>
+            <h1 class="title">
+                <i class="ion-android-folder"></i>&nbsp;&nbsp;Search Result</h1>
+        </div>
+        <div class="content has-header has-footer padding" style="overflow: scroll; height: 100%;" id="sectionContainer">
+            <div id="dvContainer">
+                <div class="button-bar pager" style="margin-bottom: 10px;">
+                    <a class="button button-outline button-positive icon-left ion-chevron-left" onclick="goPrevious();">Previous</a>
+                    <a class="button button-outline button-positive">Page No:
+                    <label class="pageNumber">1</label></a>
+                    <a class="button button-outline button-positive icon-right ion-chevron-right" onclick="goNext();">Next</a>
+                </div>
+                <ul class="list" id="dvContent">
+                </ul>
+                <div class="button-bar pager" style="margin-bottom: 10px;">
+                    <a class="button button-outline button-positive icon-left ion-chevron-left" onclick="goPrevious();">Previous</a>
+                    <a class="button button-outline button-positive">Page No:
+                    <label class="pageNumber">1</label></a>
+                    <a class="button button-outline button-positive icon-right ion-chevron-right" onclick="goNext();">Next</a>
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+            <input type="hidden" id="hfPageNo" />
+        </div>
+        <div class="tabs tabs-positive tabs-icon-top">
+            <a class="tab-item" href="searchresult.html?vSearchType=1"><i class="icon ion-ios7-information-outline" style="font-size: 25px;"></i>Cases</a>
+            <a class="tab-item" href="topic.html"><i class="icon ion-ios7-bookmarks-outline" style="font-size: 25px;"></i>Topic</a>
+            <a class="tab-item" href="search.html"><i class="icon ion-ios7-search" style="font-size: 25px;"></i>Advance </a>
+            <a class="tab-item" href="bareact.html"><i class="icon ion-ios7-albums-outline" style="font-size: 25px;"></i>Bare Act </a>
+            <a class="tab-item" href="citation.html"><i class="icon ion-ios7-calendar-outline" style="font-size: 25px;"></i>Citation</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+﻿<html>
+<head>
+    <meta charset="utf-8">
+    <title>click judgment</title>
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="css/ionic.css">
+    <link rel="stylesheet" href="spinner/waitMe.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="spinner/waitMe.min.js"></script>
+    <script src="phonegap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var vSearchType = 2;
+
+        $(function () {
+            $("#btnTopicSearch").click(function () {
+
+                var vtitle = $("#ptitle").val();
+                var vsection = $("#psection").val();
+                location = 'searchresult.html?vSearchType=' + vSearchType + '&vtitle=' + vtitle + '&vsection=' + vsection;
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="ionic-body">
+        <div class="bar bar-header bar-positive">
+            <a class="button icon ion-chevron-left" onclick="window.history.go(-1); return false;"></a>
+            <h1 class="title">
+                <i class="icon ion-android-search"></i>&nbsp;&nbsp;Search by topics</h1>
+        </div>
+        <div class="content has-header has-footer padding" style="overflow: scroll; height: 100%;" id="dvContent">
+            <div class="list">
+                <label class="item">
+                    <b>Topic Search</b>
+                    
+                </label>
+                <label class="item item-input icon ion-document">
+                    &nbsp;&nbsp;
+                    <input type="text" id="ptitle" placeholder="Please enter title">
+                </label>
+                <label class="item item-input icon ion-document">
+                    &nbsp;&nbsp;
+                    <input type="text" id="psection" placeholder="Please enter section">
+                </label>
+                <a href="#" class="button button-full button-stable icon icon-left ion-android-search" id="btnTopicSearch">Search Acts &nbsp;&nbsp;</a>
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+        </div>
+        <div class="tabs tabs-positive tabs-icon-top">
+            <a class="tab-item" href="searchresult.html?vSearchType=1"><i class="icon ion-ios7-information-outline" style="font-size: 25px;"></i>Cases</a>
+            <a class="tab-item" href="topic.html"><i class="icon ion-ios7-bookmarks-outline" style="font-size: 25px;"></i>Topic</a>
+            <a class="tab-item" href="search.html"><i class="icon ion-ios7-search" style="font-size: 25px;"></i>Advance </a>
+            <a class="tab-item" href="bareact.html"><i class="icon ion-ios7-albums-outline" style="font-size: 25px;"></i>Bare Act </a>
+            <a class="tab-item" href="citation.html"><i class="icon ion-ios7-calendar-outline" style="font-size: 25px;"></i>Citation</a>
+        </div>
+    </div>
+</body>
+</html>
